@@ -1,28 +1,15 @@
 import { BP2D } from 'binpackingjs';
-const { Bin, Box, Packer, heuristics } = BP2D;
+const { Bin, Box, Packer } = BP2D;
 
-export const buildBins = (parts: Part[], bins: Stock[], algo) => {
+export const buildBins = (parts: Part[], bins: Stock[], kerf, algo) => {
   console.log('parts', parts);
 
   let bin_1 = new Bin(bins[0].width, bins[0].height, algo);
-  // let boxes = parts.map((part: Part) => {
-  //   return new Box(part.h, part.w);
-  // });
 
-  let boxes = parts.reduce((acc: [], part: Part) => {
-    let boxes = [];
-    for (let i = 0; i < part.qty; i++) {
-      boxes.push(new Box(part.h, part.w));
-    }
-    return [...acc, ...boxes];
-  }, []);
-
-  // let boxes = [
-  //   new Box(200, 10),
-  //   new Box(200, 10),
-  //   new Box(40, 10),
-  //   new Box(40, 10),
-  // ];
+  let boxes = parts.map((part: Part) => {
+    return new Box(part.id, part.h, part.w, false);
+  });
+  console.log('boxes', boxes);
   let packer = new Packer([bin_1]);
 
   return packer.pack(boxes);

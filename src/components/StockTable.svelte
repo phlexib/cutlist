@@ -8,17 +8,21 @@
     TableHeadCell,
     NumberInput,
     Button,
+    Input,
   } from 'flowbite-svelte';
 
+  import { parts } from '../stores/cuts';
   import { FaPlus } from 'svelte-icons/fa';
 
-  export let list: any[] = [];
   let length = 20;
   let width = 1;
   let qty = 1;
 
   const addPart = () => {
-    console.log('add part');
+    parts.set([
+      ...$parts,
+      { id: crypto.randomUUID(), name: '', h: 1, w: 1, qty: 1 },
+    ]);
   };
 </script>
 
@@ -43,9 +47,16 @@
     </TableHeadCell>
   </TableHead>
   <TableBody>
-    {#each list as el, id (id)}
+    {#each $parts as el, id (el.id)}
       <TableBodyRow>
-        <TableBodyCell>{el.name}</TableBodyCell>
+        <TableBodyCell
+          ><Input
+            type="text"
+            placeholder="Name"
+            size="sm"
+            bind:value={el.name}
+          /></TableBodyCell
+        >
         <TableBodyCell>
           <NumberInput size="sm" bind:value={el.h} /></TableBodyCell
         >
@@ -62,6 +73,10 @@
 </Table>
 
 <style>
+  h4 {
+    margin-left: 1.5rem;
+    font-weight: bold;
+  }
   icon {
     width: 100%;
     height: 100%;

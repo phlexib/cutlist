@@ -8,16 +8,19 @@ interface Box {
 }
 
 interface Stock {
+  name: string;
   width: number;
   height: number;
+  depth: number;
   material?: string;
 }
 
 interface Part {
+  id: string;
   w: number;
   h: number;
   qty: number = 1;
   name?: string;
   material?: string;
-  flip: boolean = false;
+  flip?: boolean = false;
 }
