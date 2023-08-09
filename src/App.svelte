@@ -1,5 +1,6 @@
 <script lang="ts">
   import { BP2D } from 'binpackingjs';
+  import './/api/simple-packer';
   const { heuristics } = BP2D;
   import { buildBins, buildManifest } from './api/packer';
   import PartTable from './components/PartsTable.svelte';

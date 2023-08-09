@@ -46,6 +46,55 @@ Example:
 
 ******************************************************************************/
 
+let defaultParts: Part[] = [
+  {
+    id: '1',
+    w: 1,
+    h: 20,
+    qty: 8,
+    name: 'Side',
+    material: 'Red Oak',
+    flip: false,
+  },
+  {
+    id: '2',
+    w: 1,
+    h: 4.5,
+    qty: 2,
+    name: 'Feet',
+    material: 'Red Oak',
+    flip: false,
+  },
+  {
+    id: '3',
+    w: 1,
+    h: 10,
+    qty: 10,
+    name: 'Apron',
+    material: 'Red Oak',
+    flip: false,
+  },
+];
+
+let defaultStocks: Stock[] = [
+  {
+    height: 36,
+    width: 8,
+    depth: 1,
+    qty: 2,
+    material: 'Red Oak',
+    name: 'WStock_1',
+  },
+  {
+    height: 24,
+    width: 6,
+    depth: 1,
+    qty: 1,
+    material: 'Walnut',
+    name: 'Stock_1',
+  },
+];
+
 class Packer {
   w: number;
   h: number;
@@ -86,7 +135,19 @@ var blocks = [
   { w: 80, h: 80, fit: { x: 0, y: 0 } },
 ];
 
-var packer = new Packer(500, 500);
+const flatParts = defaultParts.reduce((acc: [], part: Part) => {
+  let boxes = [];
+  for (let i = 0; i < part.qty; i++) {
+    boxes.push({ ...part, id: `${part.name}_${i + 1}` });
+  }
+  return [...acc, ...boxes];
+}, []);
+
+blocks = flatParts.map((part: Part) => {
+  return { ...part, w: part.w, h: part.h, fit: { x: 0, y: 0 } };
+});
+
+var packer = new Packer(36, 8);
 packer.fit(blocks);
 
 for (var n = 0; n < blocks.length; n++) {
