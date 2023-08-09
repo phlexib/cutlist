@@ -9,9 +9,12 @@
     NumberInput,
     Button,
     Input,
+    Dropdown,
+    DropdownItem,
+    Chevron,
   } from 'flowbite-svelte';
 
-  import { parts } from '../stores/cuts';
+  import { parts, materials } from '../stores/cuts';
   import { FaPlus } from 'svelte-icons/fa';
 
   let length = 20;
@@ -23,6 +26,17 @@
       ...$parts,
       { id: crypto.randomUUID(), name: '', h: 1, w: 1, qty: 1 },
     ]);
+  };
+
+  const handleMaterialSelect = (id, material) => {
+    console.log(id, material);
+    const updatedParts = $parts.map((part) => {
+      if (part.name === id) {
+        return { ...part, material: material };
+      }
+      return part;
+    });
+    parts.set(updatedParts);
   };
 </script>
 
@@ -47,7 +61,7 @@
     </TableHeadCell>
   </TableHead>
   <TableBody>
-    {#each $parts as el, id (id)}
+    {#each $parts as el, id (el.name)}
       <TableBodyRow>
         <TableBodyCell
           ><Input
@@ -66,7 +80,20 @@
         <TableBodyCell
           ><NumberInput size="sm" bind:value={el.qty} /></TableBodyCell
         >
-        <TableBodyCell>{el.material}</TableBodyCell>
+        <TableBodyCell>
+          <Button id="dd-button" size="sm" outline={true} color="none">
+            <Chevron>{el.material}</Chevron></Button
+          >
+          <Dropdown>
+            {#each $materials as material}
+              <DropdownItem
+                on:click={() => {
+                  handleMaterialSelect(el.name, material);
+                }}>{material}</DropdownItem
+              >
+            {/each}
+          </Dropdown>
+        </TableBodyCell>
       </TableBodyRow>
     {/each}
   </TableBody>

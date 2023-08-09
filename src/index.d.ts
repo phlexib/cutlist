@@ -12,6 +12,7 @@ interface Stock {
   width: number;
   height: number;
   depth: number;
+  qty?: number = 1;
   material?: string;
 }
 

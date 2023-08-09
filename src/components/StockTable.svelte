@@ -11,25 +11,25 @@
     Input,
   } from 'flowbite-svelte';
 
-  import { parts } from '../stores/cuts';
+  import { stocks } from '../stores/cuts';
   import { FaPlus } from 'svelte-icons/fa';
 
   let length = 20;
   let width = 1;
   let qty = 1;
 
-  const addPart = () => {
-    parts.set([
-      ...$parts,
-      { id: crypto.randomUUID(), name: '', h: 1, w: 1, qty: 1 },
+  const addStock = () => {
+    stocks.set([
+      ...$stocks,
+      { name: '', height: 1, width: 1, depth: 1, material: '' },
     ]);
   };
 </script>
 
 <div class="flex justify-between">
-  <h4>Parts</h4>
+  <h4>Stock</h4>
 
-  <button on:click={addPart}>
+  <button on:click={addStock}>
     <icon>
       <FaPlus />
     </icon>
@@ -47,7 +47,7 @@
     </TableHeadCell>
   </TableHead>
   <TableBody>
-    {#each $parts as el, id (el.id)}
+    {#each $stocks as el, id (el.name)}
       <TableBodyRow>
         <TableBodyCell
           ><Input
@@ -58,15 +58,22 @@
           /></TableBodyCell
         >
         <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.h} /></TableBodyCell
+          <NumberInput size="sm" bind:value={el.height} /></TableBodyCell
         >
         <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.w} /></TableBodyCell
+          <NumberInput size="sm" bind:value={el.width} /></TableBodyCell
         >
         <TableBodyCell
           ><NumberInput size="sm" bind:value={el.qty} /></TableBodyCell
         >
-        <TableBodyCell>{el.material}</TableBodyCell>
+        <TableBodyCell>
+          <Input
+            type="text"
+            placeholder="Name"
+            size="sm"
+            bind:value={el.material}
+          /></TableBodyCell
+        >
       </TableBodyRow>
     {/each}
   </TableBody>

@@ -1,0 +1,10 @@
+Preferences {
+ inputs 0
+ name Preferences
+ localCachePath /Volumes/ExtremeSSD/cache/nuke
+ DiskCachePath "/Volumes/ExtremeSSD/cache/nuke\""
+ TimelineDiskCachePath /Volumes/ExtremeSSD/cache/nuke
+ selectedGPUDeviceName "Apple M1 Pro"
+ platformPathRemaps "G:\\Shared Drives\\;/Volumes/GoogleDrive/Shared drives/;-;//abadal/work/current/;/Volumes/work/current/;-;;-;-;"
+ defaultFlipbook "Flipbook Viewer"
+}
