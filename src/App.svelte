@@ -52,9 +52,17 @@
 
 <main class="grid grid-cols-2 gap-x-4">
   <div>
-    <div class="flex m-4">
+    <div class="flex m-4 items-center gap-x-2">
       <Label>Blade Kerf</Label>
-      <NumberInput size="sm" bind:value={$kerf} />
+      <input
+        type="number"
+        id="kerf-input"
+        name="Blade Kerf"
+        min="0"
+        max="2"
+        step="0.0625"
+        bind:value={$kerf}
+      />
     </div>
     <StockTable />
     <PartTable />
@@ -123,5 +131,9 @@
   .box {
     position: absolute;
     cursor: pointer;
+  }
+  input {
+    border-radius: 6px;
+    height: 32px;
   }
 </style>
