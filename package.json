@@ -3,9 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://github.io/phlexib/cutlist",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "deploy": "yarn build && gh-pages -d dist",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "start": "ts-node ./index.ts"
@@ -15,6 +17,7 @@
     "@tsconfig/svelte": "^5.0.0",
     "@types/uuidv4": "^5.0.0",
     "autoprefixer": "^10.4.14",
+    "gh-pages": "^5.0.0",
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "svelte": "^4.0.5",

@@ -12,7 +12,7 @@
   } from 'flowbite-svelte';
 
   import { stocks } from '../stores/cuts';
-  import { FaPlus } from 'svelte-icons/fa';
+  import { FaPlus, FaMinus } from 'svelte-icons/fa';
 
   let length = 20;
   let width = 1;
@@ -23,6 +23,10 @@
       ...$stocks,
       { name: '', height: 1, width: 1, depth: 1, material: '' },
     ]);
+  };
+  const removeStock = (name) => {
+    const updatedStocks = $stocks.filter((part) => part.name !== name);
+    stocks.set([...updatedStocks]);
   };
 </script>
 
@@ -74,6 +78,17 @@
             bind:value={el.material}
           /></TableBodyCell
         >
+        <TableBodyCell>
+          <button
+            on:click={() => {
+              removeStock(el.name);
+            }}
+          >
+            <icon>
+              <FaMinus />
+            </icon>
+          </button>
+        </TableBodyCell>
       </TableBodyRow>
     {/each}
   </TableBody>

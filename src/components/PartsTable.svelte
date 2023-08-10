@@ -15,7 +15,7 @@
   } from 'flowbite-svelte';
 
   import { parts, materials } from '../stores/cuts';
-  import { FaPlus } from 'svelte-icons/fa';
+  import { FaPlus, FaMinus } from 'svelte-icons/fa';
 
   let length = 20;
   let width = 1;
@@ -26,6 +26,11 @@
       ...$parts,
       { id: crypto.randomUUID(), name: '', h: 1, w: 1, qty: 1 },
     ]);
+  };
+
+  const removePart = (id) => {
+    const updatedParts = $parts.filter((part) => part.id !== id);
+    parts.set([...updatedParts]);
   };
 
   const handleMaterialSelect = (id, material) => {
@@ -93,6 +98,17 @@
               >
             {/each}
           </Dropdown>
+        </TableBodyCell>
+        <TableBodyCell>
+          <button
+            on:click={() => {
+              removePart(el.id);
+            }}
+          >
+            <icon>
+              <FaMinus />
+            </icon>
+          </button>
         </TableBodyCell>
       </TableBodyRow>
     {/each}

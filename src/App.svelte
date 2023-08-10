@@ -7,7 +7,7 @@
   import PartTable from './components/PartsTable.svelte';
   import StockTable from './components/StockTable.svelte';
   import { parts, stocks, materials, kerf, algo } from './stores/cuts';
-
+  import { Range, Label, Tooltip } from 'flowbite-svelte';
   let scale = 20;
 
   $: manifest = buildManifest($materials, $parts, $stocks, $kerf, scale);
@@ -56,8 +56,13 @@
     <PartTable />
   </div>
   <div>
+    <div class="m-4">
+      <Label>Scale</Label>
+      <Range id="range1" bind:value={scale} min="10" max="50" size="sm" />
+    </div>
     {#each manifest as stock}
       <div
+        id={stock.id}
         class="stock"
         style={`width:${stock.width * scale}px; height:${
           stock.height * scale
@@ -66,6 +71,7 @@
         <p class="stock-label">{stock.material}</p>
         {#each stock.parts as part, id (id)}
           <div
+            id={part.id}
             class="box flex items-center"
             style={`height:${part.h * scale}px; width:${
               part.w * scale
@@ -75,8 +81,22 @@
           >
             <span class="text-xs text-black mx-2">{part.id}</span>
           </div>
+          <Tooltip triggeredBy={`[id^='${part.id}']`}>
+            <div class="p-2">
+              <p class="text-xs">
+                {part.name} : {part.w - $kerf} x {part.h - $kerf}
+              </p>
+            </div>
+          </Tooltip>
         {/each}
       </div>
+      <Tooltip triggeredBy={`[id^='${stock.id}']`}>
+        <div class="p-2">
+          <p class="text-xs">
+            {stock.material} | {stock.name} : {stock.width} x {stock.height}
+          </p>
+        </div>
+      </Tooltip>
     {/each}
   </div>
 </main>
@@ -93,11 +113,11 @@
   .stock {
     position: relative;
     color: #888;
-
     margin-bottom: 10px;
   }
 
   .box {
     position: absolute;
+    cursor: pointer;
   }
 </style>
