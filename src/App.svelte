@@ -50,7 +50,7 @@
   // });
 </script>
 
-<main class="grid grid-cols-2 gap-x-4">
+<main class="grid grid-cols-3 gap-x-4">
   <div>
     <div class="flex m-4 items-center gap-x-2">
       <Label>Blade Kerf</Label>
@@ -58,7 +58,7 @@
         type="number"
         id="kerf-input"
         name="Blade Kerf"
-        min="0"
+        min="0.0625"
         max="2"
         step="0.0625"
         bind:value={$kerf}
@@ -68,7 +68,7 @@
     <PartTable />
   </div>
   <div>
-    <div class="m-4">
+    <div class="m-4 col-span-2">
       <Label>Scale</Label>
       <Range id="range1" bind:value={scale} min="10" max="50" size="sm" />
     </div>

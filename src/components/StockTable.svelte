@@ -39,7 +39,7 @@
     </icon>
   </button>
 </div>
-<Table striped={true}>
+<Table striped={true} class="mb-10">
   <TableHead>
     <TableHeadCell>Name</TableHeadCell>
     <TableHeadCell>Length</TableHeadCell>

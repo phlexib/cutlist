@@ -24,6 +24,13 @@ const config = {
           900: '#A5371B',
         },
       },
+      borderRadius: {
+        lg: '2px',
+      },
+      padding: {
+        2: '2px',
+        4: '4px',
+      },
     },
   },
 };
