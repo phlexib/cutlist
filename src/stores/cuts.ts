@@ -4,8 +4,8 @@ import { defaultAlgo } from '../api/packer';
 let defaultParts: Part[] = [
   {
     id: '1',
-    w: 1,
-    h: 20,
+    w: 20,
+    h: 1,
     qty: 8,
     name: 'Side',
     material: 'Red Oak',
@@ -13,8 +13,8 @@ let defaultParts: Part[] = [
   },
   {
     id: '2',
-    w: 1,
-    h: 4.5,
+    w: 4.5,
+    h: 1,
     qty: 2,
     name: 'Feet',
     material: 'Red Oak',
@@ -22,8 +22,8 @@ let defaultParts: Part[] = [
   },
   {
     id: '3',
-    w: 1,
-    h: 10,
+    w: 10,
+    h: 1,
     qty: 10,
     name: 'Apron',
     material: 'Red Oak',
@@ -31,8 +31,8 @@ let defaultParts: Part[] = [
   },
   {
     id: '4',
-    w: 2,
-    h: 6,
+    w: 6,
+    h: 4,
     qty: 4,
     name: 'Wall',
     material: 'Walnut',
@@ -42,20 +42,20 @@ let defaultParts: Part[] = [
 
 let defaultStocks: Stock[] = [
   {
-    height: 36,
-    width: 8,
+    height: 8,
+    width: 36,
     depth: 1,
     qty: 2,
     material: 'Red Oak',
-    name: 'WStock_1',
+    name: 'RStock',
   },
   {
-    height: 24,
-    width: 6,
+    height: 8,
+    width: 24,
     depth: 1,
     qty: 1,
     material: 'Walnut',
-    name: 'Stock_1',
+    name: 'WStock',
   },
 ];
 
