@@ -1,50 +1,15 @@
-/******************************************************************************
-
-This is a very simple binary tree based bin packing algorithm that is initialized
-with a fixed width and height and will fit each block into the first node where
-it fits and then split that node into 2 parts (down and right) to track the
-remaining whitespace.
-
-Best results occur when the input blocks are sorted by height, or even better
-when sorted by max(width,height).
-
-Inputs:
-------
-
-  w:       width of target rectangle
-  h:      height of target rectangle
-  blocks: array of any objects that have .w and .h attributes
-
-Outputs:
--------
-
-  marks each block that fits with a .fit attribute pointing to a
-  node with .x and .y coordinates
-
-Example:
--------
-
-  var blocks = [
-    { w: 100, h: 100 },
-    { w: 100, h: 100 },
-    { w:  80, h:  80 },
-    { w:  80, h:  80 },
-    etc
-    etc
-  ];
-
-  var packer = new Packer(500, 500);
-  packer.fit(blocks);
-
-  for(var n = 0 ; n < blocks.length ; n++) {
-    var block = blocks[n];
-    if (block.fit) {
-      Draw(block.fit.x, block.fit.y, block.w, block.h);
-    }
-  }
-
-
-******************************************************************************/
+interface Fit {
+  x: number;
+  y: number;
+  used?: boolean;
+}
+interface Block {
+  w: number;
+  h: number;
+  name?: string;
+  material?: string;
+  fit?: Fit | null;
+}
 
 let defaultParts: Part[] = [
   {
@@ -98,10 +63,14 @@ let defaultStocks: Stock[] = [
 class Packer {
   w: number;
   h: number;
+  material: string;
+  name: string;
   root: any;
-  constructor(w, h) {
+  constructor(w, h, material, name) {
     this.w = w;
     this.h = h;
+    this.material = material;
+    this.name = name;
     this.root = { x: 0, y: 0, w: w, h: h };
   }
   fit(blocks) {
@@ -128,31 +97,108 @@ class Packer {
   }
 }
 
-var blocks = [
-  { w: 100, h: 100, fit: { x: 0, y: 0 } },
-  { w: 100, h: 100, fit: { x: 0, y: 0 } },
-  { w: 80, h: 80, fit: { x: 0, y: 0 } },
-  { w: 80, h: 80, fit: { x: 0, y: 0 } },
-];
+const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
+  const materialBins = bins.reduce((acc: [], bin: Stock) => {
+    let matBins = [];
+    for (let i = 0; i < bin.qty; i++) {
+      matBins.push({ ...bin, id: `${bin.name}_${i + 1}` });
+    }
+    return [...acc, ...matBins];
+  }, []);
 
-const flatParts = defaultParts.reduce((acc: [], part: Part) => {
-  let boxes = [];
-  for (let i = 0; i < part.qty; i++) {
-    boxes.push({ ...part, id: `${part.name}_${i + 1}` });
-  }
-  return [...acc, ...boxes];
-}, []);
+  let blocks: Block[] = parts.map((part: Part) => {
+    return { ...part, w: part.w, h: part.h };
+  });
+  console.log('blocks', blocks);
+  let flatBins = [];
 
-blocks = flatParts.map((part: Part) => {
-  return { ...part, w: part.w, h: part.h, fit: { x: 0, y: 0 } };
-});
+  materialBins.every((stock: Stock) => {
+    const bin = buildBin(blocks, stock, kerf, scale);
+    console.log('bin', bin);
+    const fitBoxes = bin.parts.filter((p) => p.fit);
+    const fitParts = fitBoxes.map((box) => {
+      return {
+        ...box,
+        x: box.fit.x,
+        y: box.fit.y,
+        w: box.w,
+        h: box.h,
+      };
+    });
+    console.log('fitBoxes', fitBoxes);
+    const remainingBoxes = bin.parts.filter((block: Block) => !block.fit);
+    if (fitBoxes.length > 0) {
+      bin.parts = fitParts;
+      bin.blocks = fitBoxes;
+      flatBins.push(bin);
+    }
+    if (remainingBoxes.length > 0) {
+      blocks = remainingBoxes;
+      return true;
+    } else {
+      return false;
+    }
+  });
+  console.log(flatBins);
+  return flatBins;
+};
 
-var packer = new Packer(36, 8);
-packer.fit(blocks);
+const buildBin = (blocks: Block[], bin: Stock, kerf, scale) => {
+  let packer = new Packer(bin.width, bin.height, bin.material, bin.name);
+  packer.fit(blocks);
 
-for (var n = 0; n < blocks.length; n++) {
-  var block = blocks[n];
-  if (block.fit) {
-    console.log(block.fit.x, block.fit.y, block.w, block.h);
-  }
-}
+  return {
+    ...bin,
+    parts: blocks,
+    blocks: blocks,
+  };
+};
+
+export const buildManifest = (
+  materials: string[],
+  parts: Part[],
+  bins: Stock[],
+  kerf: number,
+  scale: number
+) => {
+  let materialGroups = {};
+  materials.forEach((mat: string) => {
+    const flatBins = bins.reduce((acc: [], bin: Stock) => {
+      let flatBin = [];
+      for (let i = 0; i < bin.qty; i++) {
+        flatBin.push({ ...bin, id: `${bin.name}_${i + 1}` });
+      }
+      return [...acc, ...flatBin];
+    }, []);
+    const matBins = flatBins.filter((bin: Stock) => bin.material === mat);
+    console.log('matbins', matBins);
+
+    const flatParts = parts.reduce((acc: [], part: Part) => {
+      let boxes = [];
+      for (let i = 0; i < part.qty; i++) {
+        boxes.push({ ...part, id: `${part.name}_${i + 1}` });
+      }
+      return [...acc, ...boxes];
+    }, []);
+
+    const partsByMat = flatParts
+      .filter((part: Part) => part.material === mat)
+      .map((part: Part) => {
+        return { ...part, h: part.h + kerf, w: part.w + kerf };
+      });
+    console.log('partsByMat', partsByMat);
+
+    materialGroups[mat] = { bins: matBins, parts: partsByMat };
+  });
+
+  console.log('materialGroups', materialGroups);
+
+  const packs = Object.keys(materialGroups).map((mat: string) => {
+    const { bins, parts } = materialGroups[mat];
+    const pack = buildBins(parts, bins, kerf, scale);
+    return pack;
+  });
+
+  console.log('end packs', packs);
+  return packs.reduce((acc: [], pack: []) => [...acc, ...pack], []);
+};

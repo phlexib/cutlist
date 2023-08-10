@@ -1,36 +1,16 @@
 <script lang="ts">
   import { BP2D } from 'binpackingjs';
-  import './/api/simple-packer';
+  import './api/simple-packer';
   const { heuristics } = BP2D;
-  import { buildBins, buildManifest } from './api/packer';
+  import { buildManifest } from './api/simple-packer';
+  // import { buildManifest } from './api/simple-packer';
   import PartTable from './components/PartsTable.svelte';
   import StockTable from './components/StockTable.svelte';
   import { parts, stocks, materials, kerf, algo } from './stores/cuts';
 
   let scale = 20;
 
-  $: flatParts = $parts.reduce((acc: [], part: Part) => {
-    let boxes = [];
-    for (let i = 0; i < part.qty; i++) {
-      boxes.push({ ...part, id: `${part.name}_${i + 1}` });
-    }
-    return [...acc, ...boxes];
-  }, []);
-
-  // $: scaledBoxes = buildBins(
-  //   flatParts,
-  //   $stocks.filter((s) => s.material == 'Red Oak'),
-  //   $kerf,
-  //   $algo
-  // ).map((box: Box) => ({
-  //   ...box,
-  //   height: box.height * scale,
-  //   width: box.width * scale,
-  //   x: box.x * scale,
-  //   y: box.y * scale,
-  // }));
-
-  $: manifest = buildManifest($materials, flatParts, $stocks, $kerf, scale);
+  $: manifest = buildManifest($materials, $parts, $stocks, $kerf, scale);
 
   $: console.log('scaled boxes', manifest);
 
@@ -62,12 +42,12 @@
     }
   });
 
-  parts.subscribe((val) => {
-    if (val) {
-      const packs = buildManifest($materials, $parts, $stocks, $kerf, scale);
-      console.log(packs);
-    }
-  });
+  // parts.subscribe((val) => {
+  //   if (val) {
+  //     const packs = buildManifest($materials, $parts, $stocks, $kerf, scale);
+  //     console.log(packs);
+  //   }
+  // });
 </script>
 
 <main class="grid grid-cols-2 gap-x-4">
@@ -84,16 +64,16 @@
         }px; background-image:url("brown-wooden-textured.png"); `}
       >
         <p class="stock-label">{stock.material}</p>
-        {#each stock.parts as box, id (id)}
+        {#each stock.parts as part, id (id)}
           <div
             class="box flex items-center"
-            style={`height:${box.height}px; width:${
-              box.width
-            }px; transform:translate(${box.x}px, ${box.y}px);
-          background-color:${colors[box.id.split('_')[0]] || getRandomColor()};
+            style={`height:${part.h * scale}px; width:${
+              part.w * scale
+            }px; transform:translate(${part.x * scale}px, ${part.y * scale}px);
+          background-color:${colors[part.id.split('_')[0]] || getRandomColor()};
           border:${$kerf}px solid red`}
           >
-            <span class="text-xs text-black mx-2">{box.id}</span>
+            <span class="text-xs text-black mx-2">{part.id}</span>
           </div>
         {/each}
       </div>

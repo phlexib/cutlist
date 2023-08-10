@@ -58,10 +58,10 @@
           /></TableBodyCell
         >
         <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.height} /></TableBodyCell
+          <NumberInput size="sm" bind:value={el.width} /></TableBodyCell
         >
         <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.width} /></TableBodyCell
+          <NumberInput size="sm" bind:value={el.height} /></TableBodyCell
         >
         <TableBodyCell
           ><NumberInput size="sm" bind:value={el.qty} /></TableBodyCell
