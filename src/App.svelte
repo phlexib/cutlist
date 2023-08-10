@@ -7,7 +7,7 @@
   import PartTable from './components/PartsTable.svelte';
   import StockTable from './components/StockTable.svelte';
   import { parts, stocks, materials, kerf, algo } from './stores/cuts';
-  import { Range, Label, Tooltip } from 'flowbite-svelte';
+  import { Range, Label, Tooltip, NumberInput } from 'flowbite-svelte';
   let scale = 20;
 
   $: manifest = buildManifest($materials, $parts, $stocks, $kerf, scale);
@@ -52,6 +52,10 @@
 
 <main class="grid grid-cols-2 gap-x-4">
   <div>
+    <div class="flex m-4">
+      <Label>Blade Kerf</Label>
+      <NumberInput size="sm" bind:value={$kerf} />
+    </div>
     <StockTable />
     <PartTable />
   </div>

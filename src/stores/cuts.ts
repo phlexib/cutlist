@@ -61,7 +61,7 @@ let defaultStocks: Stock[] = [
 
 export const parts = writable<Part[]>(defaultParts);
 export const stocks = writable<Stock[]>(defaultStocks);
-export let kerf = writable(0.2);
+export let kerf = writable(0.125);
 export let algo = writable(defaultAlgo);
 
 export const materials = derived(stocks, ($stocks) => {
