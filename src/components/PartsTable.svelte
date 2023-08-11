@@ -15,7 +15,7 @@
   } from 'flowbite-svelte';
 
   import { parts, materials } from '../stores/cuts';
-  import { FaPlus, FaMinus } from 'svelte-icons/fa';
+  import { FaPlus, FaMinus, FaRedo } from 'svelte-icons/fa';
 
   let length = 20;
   let width = 1;
@@ -30,6 +30,18 @@
 
   const removePart = (id) => {
     const updatedParts = $parts.filter((part) => part.id !== id);
+    parts.set([...updatedParts]);
+  };
+
+  const flipPart = (id) => {
+    const parToUpdate = $parts.find((part) => part.id === id);
+
+    const updatedParts = $parts.map((part) => {
+      if (part.id === id) {
+        return { ...part, h: parToUpdate.w, w: parToUpdate.h };
+      }
+      return part;
+    });
     parts.set([...updatedParts]);
   };
 
@@ -61,6 +73,9 @@
     <TableHeadCell>Width</TableHeadCell>
     <TableHeadCell>Qty</TableHeadCell>
     <TableHeadCell>Material</TableHeadCell>
+    <TableHeadCell>
+      <span class="sr-only">Orientation</span>
+    </TableHeadCell>
     <TableHeadCell>
       <span class="sr-only"> Edit </span>
     </TableHeadCell>
@@ -98,6 +113,17 @@
               >
             {/each}
           </Dropdown>
+        </TableBodyCell>
+        <TableBodyCell>
+          <button
+            on:click={() => {
+              flipPart(el.id);
+            }}
+          >
+            <icon>
+              <FaRedo />
+            </icon>
+          </button>
         </TableBodyCell>
         <TableBodyCell>
           <button
