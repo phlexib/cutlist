@@ -1,44 +1,36 @@
 <script lang="ts">
-  import { BP2D } from 'binpackingjs';
-  import './api/simple-packer';
+  import { BP2D } from "binpackingjs";
+  import "./api/simple-packer";
   const { heuristics } = BP2D;
-  import { buildManifest } from './api/simple-packer';
+  import { buildManifest } from "./api/simple-packer";
   // import { buildManifest } from './api/simple-packer';
-  import PartTable from './components/PartsTable.svelte';
-  import StockTable from './components/StockTable.svelte';
-  import { parts, stocks, materials, kerf, algo } from './stores/cuts';
-  import { Range, Label, Tooltip, NumberInput } from 'flowbite-svelte';
+  import PartTable from "./components/PartsTable.svelte";
+  import StockTable from "./components/StockTable.svelte";
+  import Part from "./components/Part.svelte";
+  import Stock from "./components/Stock.svelte";
+  import { parts, stocks, materials, kerf, partsColor } from "./stores/cuts";
+  import { selectedItem } from "./stores/app";
+  import { Range, Label, Tooltip, NumberInput } from "flowbite-svelte";
   let scale = 20;
 
-  $: manifest = buildManifest($materials, $parts, $stocks, $kerf, scale);
+  $: manifest = buildManifest(
+    $materials.map((m) => m.name),
+    $parts,
+    $stocks,
+    $kerf,
+    scale
+  );
 
-  $: console.log('scaled boxes', manifest);
-
+  $: console.log("manifest", manifest);
   const getRandom = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
   };
 
-  const getRandomColor = () => {
-    let rng = getRandom(0, 16777215);
-    return '#' + rng.toString(16).slice(2, 8).toUpperCase();
-  };
-
-  const getColors = () => {
-    let newColors = {};
-    for (let i = 0; i < $parts.length; i++) {
-      newColors = { ...newColors, [$parts[i].name]: getRandomColor() };
-    }
-    return newColors;
-  };
-
-  let colors = getColors();
-
   materials.subscribe((val) => {
     if (val) {
-      colors = getColors();
-      console.log(colors);
+      console.log(val);
     }
   });
 
@@ -50,7 +42,7 @@
   // });
 </script>
 
-<main class="grid grid-cols-2 gap-x-4">
+<main class="grid grid-cols-4 gap-x-8">
   <div>
     <div class="flex m-4 items-center gap-x-2">
       <Label>Blade Kerf</Label>
@@ -67,50 +59,17 @@
     <StockTable />
     <PartTable />
   </div>
-  <div>
+  <div class="col-span-2">
     <div class="m-4">
       <Label>Scale</Label>
       <Range id="range1" bind:value={scale} min="10" max="50" size="sm" />
     </div>
+
     {#each manifest as stock}
-      <div
-        id={stock.id}
-        class="stock"
-        style={`width:${stock.width * scale}px; height:${
-          stock.height * scale
-        }px; background-image:url("brown-wooden-textured.png"); `}
-      >
-        <p class="stock-label">{stock.material}</p>
-        {#each stock.parts as part, id (id)}
-          <div
-            id={part.id}
-            class="box flex items-center"
-            style={`height:${part.h * scale}px; width:${
-              part.w * scale
-            }px; transform:translate(${part.x * scale}px, ${part.y * scale}px);
-          background-color:${colors[part.id.split('_')[0]] || getRandomColor()};
-          border:${$kerf}px solid red`}
-          >
-            <span class="text-xs text-black mx-2">{part.id}</span>
-          </div>
-          <Tooltip triggeredBy={`[id^='${part.id}']`}>
-            <div class="p-2">
-              <p class="text-xs">
-                {part.name} : {part.w - $kerf} x {part.h - $kerf}
-              </p>
-            </div>
-          </Tooltip>
-        {/each}
-      </div>
-      <Tooltip triggeredBy={`[id^='${stock.id}']`}>
-        <div class="p-2">
-          <p class="text-xs">
-            {stock.material} | {stock.name} : {stock.width} x {stock.height}
-          </p>
-        </div>
-      </Tooltip>
+      <Stock {stock} {scale} />
     {/each}
   </div>
+  <div>{JSON.stringify($selectedItem)}</div>
 </main>
 
 <style>

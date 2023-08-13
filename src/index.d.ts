@@ -25,3 +25,8 @@ interface Part {
   material?: string;
   flip?: boolean = false;
 }
+
+interface Material {
+  name: string;
+  color: string;
+}

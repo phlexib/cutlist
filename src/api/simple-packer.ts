@@ -13,30 +13,30 @@ interface Block {
 
 let defaultParts: Part[] = [
   {
-    id: '1',
+    id: "1",
     w: 1,
     h: 20,
     qty: 8,
-    name: 'Side',
-    material: 'Red Oak',
+    name: "Side",
+    material: "Red Oak",
     flip: false,
   },
   {
-    id: '2',
+    id: "2",
     w: 1,
     h: 4.5,
     qty: 2,
-    name: 'Feet',
-    material: 'Red Oak',
+    name: "Feet",
+    material: "Red Oak",
     flip: false,
   },
   {
-    id: '3',
+    id: "3",
     w: 1,
     h: 10,
     qty: 10,
-    name: 'Apron',
-    material: 'Red Oak',
+    name: "Apron",
+    material: "Red Oak",
     flip: false,
   },
 ];
@@ -47,16 +47,16 @@ let defaultStocks: Stock[] = [
     width: 8,
     depth: 1,
     qty: 2,
-    material: 'Red Oak',
-    name: 'WStock_1',
+    material: "Red Oak",
+    name: "WStock_1",
   },
   {
     height: 24,
     width: 6,
     depth: 1,
     qty: 1,
-    material: 'Walnut',
-    name: 'Stock_1',
+    material: "Walnut",
+    name: "Stock_1",
   },
 ];
 
@@ -109,12 +109,12 @@ const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
   let blocks: Block[] = parts.map((part: Part) => {
     return { ...part, w: part.w, h: part.h };
   });
-  console.log('blocks', blocks);
+  console.log("blocks", blocks);
   let flatBins = [];
 
   materialBins.every((stock: Stock) => {
-    const bin = buildBin(blocks, stock, kerf, scale);
-    console.log('bin', bin);
+    const bin = buildBin(blocks, stock);
+    console.log("bin", bin);
     const fitBoxes = bin.parts.filter((p) => p.fit);
     const fitParts = fitBoxes.map((box) => {
       return {
@@ -125,11 +125,35 @@ const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
         h: box.h,
       };
     });
-    console.log('fitBoxes', fitBoxes);
+    console.log("fitBoxes", fitBoxes);
+
+    // Get Cuts
+    let xCuts = fitBoxes.map((box) => {
+      return [box.fit.x, box.fit.x + box.w];
+    });
+    let xCutsFlat = xCuts.flat();
+    xCutsFlat = xCutsFlat.filter((cut) => {
+      return cut != 0;
+    });
+    xCutsFlat = [...new Set(xCutsFlat)];
+    console.log("xCuts", xCutsFlat);
+
+    let yCuts = fitBoxes.map((box) => {
+      return [box.fit.y, box.fit.y + box.h];
+    });
+    // remove duplicates
+    let yCutsFlat = yCuts.flat();
+    yCutsFlat = yCutsFlat.filter((cut) => {
+      return cut != 0;
+    });
+    yCutsFlat = [...new Set(yCutsFlat)];
+    console.log("yCuts", yCutsFlat);
+
     const remainingBoxes = bin.parts.filter((block: Block) => !block.fit);
     if (fitBoxes.length > 0) {
       bin.parts = fitParts;
       bin.blocks = fitBoxes;
+      bin.cuts = { xCuts: xCuts, yCuts: yCuts };
       flatBins.push(bin);
     }
     if (remainingBoxes.length > 0) {
@@ -143,7 +167,7 @@ const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
   return flatBins;
 };
 
-const buildBin = (blocks: Block[], bin: Stock, kerf, scale) => {
+const buildBin = (blocks: Block[], bin: Stock) => {
   let packer = new Packer(bin.width, bin.height, bin.material, bin.name);
   packer.fit(blocks);
 
@@ -151,6 +175,7 @@ const buildBin = (blocks: Block[], bin: Stock, kerf, scale) => {
     ...bin,
     parts: blocks,
     blocks: blocks,
+    cuts: {},
   };
 };
 
@@ -171,7 +196,7 @@ export const buildManifest = (
       return [...acc, ...flatBin];
     }, []);
     const matBins = flatBins.filter((bin: Stock) => bin.material === mat);
-    console.log('matbins', matBins);
+    console.log("matbins", matBins);
 
     const flatParts = parts.reduce((acc: [], part: Part) => {
       let boxes = [];
@@ -186,12 +211,12 @@ export const buildManifest = (
       .map((part: Part) => {
         return { ...part, h: part.h + kerf, w: part.w + kerf };
       });
-    console.log('partsByMat', partsByMat);
+    console.log("partsByMat", partsByMat);
 
     materialGroups[mat] = { bins: matBins, parts: partsByMat };
   });
 
-  console.log('materialGroups', materialGroups);
+  console.log("materialGroups", materialGroups);
 
   const packs = Object.keys(materialGroups).map((mat: string) => {
     const { bins, parts } = materialGroups[mat];
@@ -199,6 +224,6 @@ export const buildManifest = (
     return pack;
   });
 
-  console.log('end packs', packs);
+  console.log("end packs", packs);
   return packs.reduce((acc: [], pack: []) => [...acc, ...pack], []);
 };
