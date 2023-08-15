@@ -11,6 +11,7 @@
   import { parts, stocks, materials, kerf, partsColor } from "./stores/cuts";
   import { selectedItem } from "./stores/app";
   import { Range, Label, Tooltip, NumberInput } from "flowbite-svelte";
+  import Inspector from "./Inspector.svelte";
   let scale = 20;
 
   $: manifest = buildManifest(
@@ -42,7 +43,7 @@
   // });
 </script>
 
-<main class="grid grid-cols-4 gap-x-8">
+<main class="grid grid-cols-3 gap-x-8">
   <div>
     <div class="flex m-4 items-center gap-x-2">
       <Label>Blade Kerf</Label>
@@ -69,8 +70,8 @@
       <Stock {stock} {scale} />
     {/each}
   </div>
-  <div>{JSON.stringify($selectedItem)}</div>
 </main>
+<div><Inspector data={manifest} /></div>
 
 <style>
   .stock-label {

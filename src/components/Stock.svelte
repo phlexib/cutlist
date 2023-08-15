@@ -2,6 +2,7 @@
   export let scale = 20;
   export let stock: any;
   import Part from "./Part.svelte";
+  import Cut from "./Cut.svelte";
   import { materials } from "../stores/cuts";
   import { selectedItem } from "../stores/app";
 
@@ -21,12 +22,13 @@
   {#each stock.parts as part, i}
     <Part {part} {scale} onClick={setSelectedItem} />
   {/each}
+  {#each stock.cuts as cut, i}
+    <Cut {cut} {scale} onClick={setSelectedItem} />
+  {/each}
 </svg>
 
 <style>
   .stock {
-    stroke: rgb(29, 155, 196);
-    stroke-width: 1;
     margin-bottom: 10px;
   }
 </style>

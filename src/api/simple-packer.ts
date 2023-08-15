@@ -97,6 +97,101 @@ class Packer {
   }
 }
 
+const buildCuts = (fitBoxes) => {
+  // Get Cuts
+  let xCuts = fitBoxes.map((box) => {
+    return [box.fit.x, box.fit.x + box.w];
+  });
+  let xCutsFlat = xCuts.flat();
+  xCutsFlat = xCutsFlat.filter((cut) => {
+    return cut != 0;
+  });
+
+  xCutsFlat = [...new Set(xCutsFlat)];
+  console.log("xCuts", xCutsFlat);
+
+  // Get Cuts
+  let hor = [];
+  let ver = [];
+  let cuts = fitBoxes
+    .map((box) => {
+      let top = {
+        from: { x: box.fit.x, y: box.fit.y },
+        to: { x: box.fit.x + box.w, y: box.fit.y },
+      };
+      let left = {
+        from: { x: box.fit.x, y: box.fit.y },
+        to: { x: box.fit.x, y: box.fit.y + box.h },
+      };
+      let right = {
+        from: { x: box.fit.x + box.w, y: box.fit.y },
+        to: { x: box.fit.x + box.w, y: box.fit.y + box.h },
+      };
+      let bottom = {
+        from: { x: box.fit.x, y: box.fit.y + box.h },
+        to: { x: box.fit.x + box.w, y: box.fit.y + box.h },
+      };
+
+      hor.push(top, bottom);
+      ver.push(left, right);
+
+      return [top, left, right, bottom];
+    })
+    .flat();
+
+  // for each cut, find the longest distance between the same x or y
+  const sortedCuts = { h: hor, v: ver };
+  console.log("sortedCuts", sortedCuts);
+  let horizontalCuts = sortedCuts.h.reduce((acc: [], cut: any) => {
+    let longestCut;
+    const { from, to } = cut;
+    const { x, y } = from;
+    const { x: x2, y: y2 } = to;
+    if (y2 == y) {
+      if (x2 > x) {
+        longestCut = { minX: x, y: from.y, w: x2 };
+      }
+      return { ...acc, [y]: longestCut.w };
+    } else {
+      return acc;
+    }
+  }, {});
+
+  const horizontalCutsArray = Object.keys(horizontalCuts).map((key) => {
+    return {
+      from: { x: 0, y: parseFloat(key) },
+      to: { y: parseFloat(key), x: horizontalCuts[key] },
+    };
+  });
+
+  let verticalCuts = sortedCuts.v.reduce((acc: [], cut: any) => {
+    let longestCut;
+    const { from, to } = cut;
+    const { x, y } = from;
+    const { x: x2, y: y2 } = to;
+    if (x2 == x) {
+      if (y2 > y) {
+        longestCut = { minX: x, y: from.y, w: y2 };
+      } else {
+        longestCut = { minX: x, y: from.y, w: y };
+      }
+      return { ...acc, [x]: longestCut.w };
+    } else {
+      return acc;
+    }
+  }, {});
+  console.log("verticalCuts", verticalCuts);
+  const verticalCutsArray = Object.keys(verticalCuts).map((key) => {
+    return {
+      from: { y: 0, x: parseFloat(key) },
+      to: { x: parseFloat(key), y: horizontalCuts[key] },
+    };
+  });
+
+  console.log("cuts", horizontalCutsArray);
+  return cuts;
+};
+
 const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
   const materialBins = bins.reduce((acc: [], bin: Stock) => {
     let matBins = [];
@@ -127,33 +222,13 @@ const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
     });
     console.log("fitBoxes", fitBoxes);
 
-    // Get Cuts
-    let xCuts = fitBoxes.map((box) => {
-      return [box.fit.x, box.fit.x + box.w];
-    });
-    let xCutsFlat = xCuts.flat();
-    xCutsFlat = xCutsFlat.filter((cut) => {
-      return cut != 0;
-    });
-    xCutsFlat = [...new Set(xCutsFlat)];
-    console.log("xCuts", xCutsFlat);
-
-    let yCuts = fitBoxes.map((box) => {
-      return [box.fit.y, box.fit.y + box.h];
-    });
-    // remove duplicates
-    let yCutsFlat = yCuts.flat();
-    yCutsFlat = yCutsFlat.filter((cut) => {
-      return cut != 0;
-    });
-    yCutsFlat = [...new Set(yCutsFlat)];
-    console.log("yCuts", yCutsFlat);
-
     const remainingBoxes = bin.parts.filter((block: Block) => !block.fit);
     if (fitBoxes.length > 0) {
+      const cuts = buildCuts(fitParts);
       bin.parts = fitParts;
       bin.blocks = fitBoxes;
-      bin.cuts = { xCuts: xCuts, yCuts: yCuts };
+      bin.cuts = cuts;
+
       flatBins.push(bin);
     }
     if (remainingBoxes.length > 0) {

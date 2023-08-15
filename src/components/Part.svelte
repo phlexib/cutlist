@@ -31,7 +31,7 @@
   height={part.h * scale}
   x={part.x * scale}
   y={part.y * scale}
-  style={`fill: #12345;stroke-width:1;stroke:#000000`}
+  style={`fill: #12345;`}
 />
 <text
   class="part-text id"
@@ -46,8 +46,6 @@
 
 <style>
   .part {
-    stroke: rgb(29, 155, 196);
-    stroke-width: 1;
     cursor: pointer;
   }
   .part:hover {
