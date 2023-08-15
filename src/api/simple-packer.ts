@@ -163,7 +163,7 @@ const buildCuts = (fitBoxes) => {
       to: { y: parseFloat(key), x: horizontalCuts[key] },
     };
   });
-
+  console.log("horizontalCuts", horizontalCutsArray);
   let verticalCuts = sortedCuts.v.reduce((acc: [], cut: any) => {
     let longestCut;
     const { from, to } = cut;
@@ -184,12 +184,12 @@ const buildCuts = (fitBoxes) => {
   const verticalCutsArray = Object.keys(verticalCuts).map((key) => {
     return {
       from: { y: 0, x: parseFloat(key) },
-      to: { x: parseFloat(key), y: horizontalCuts[key] },
+      to: { x: parseFloat(key), y: verticalCuts[key] },
     };
   });
 
-  console.log("cuts", horizontalCutsArray);
-  return cuts;
+  console.log("verticalCutsArray", verticalCutsArray);
+  return [...horizontalCutsArray, ...verticalCutsArray];
 };
 
 const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {

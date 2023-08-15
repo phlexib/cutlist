@@ -10,20 +10,21 @@
     if (onClick) onClick(cut);
   };
 
-  // onMount(() => {
-  //   rect = document.getElementById(part.id);
-  //   if (rect) {
-  //     rect.addEventListener("click", handleClick);
-  //   }
-  // });
-  // onDestroy(() => {
-  //   document.removeEventListener("click", handleClick, {
-  //     capture: true,
-  //   });
-  // });
+  onMount(() => {
+    rect = document.getElementById(cut.id);
+    if (rect) {
+      rect.addEventListener("click", handleClick);
+    }
+  });
+  onDestroy(() => {
+    document.removeEventListener("click", handleClick, {
+      capture: true,
+    });
+  });
 </script>
 
 <line
+  id={`${cut.stock}-${cut.id}`}
   class="cut-line"
   x1={cut.from.x * scale}
   y1={cut.from.y * scale}

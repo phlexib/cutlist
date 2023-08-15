@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import FaEye from "svelte-icons/fa/FaEye.svelte";
   export let tableData = [
     {
       id: 1,
@@ -7,10 +9,27 @@
     },
   ];
 
+  let item;
   const getHeaders = () => {
     return Object.keys(tableData[0]);
   };
   let headers = getHeaders();
+
+  const handleClick = (item) => {
+    console.log(item);
+  };
+
+  //   onMount(() => {
+  //     item = document.getElementById(part.id);
+  //     if (item) {
+  //       item.addEventListener("click", handleClick);
+  //     }
+  //   });
+  //   onDestroy(() => {
+  //     document.removeEventListener("click", handleClick, {
+  //       capture: true,
+  //     });
+  //   });
 </script>
 
 <div>
@@ -20,14 +39,26 @@
         {#each headers as header, id (header)}
           <th>{header}</th>
         {/each}
+        <th>show</th>
       </tr>
     </thead>
     <tbody>
       {#each tableData as row, id (row)}
-        <tr>
+        <tr id={row.id.toString()}>
           {#each headers as header, id (header)}
             <td>{row[header]}</td>
           {/each}
+          <td
+            ><button
+              on:click={() => {
+                handleClick(row);
+              }}
+            >
+              <icon>
+                <FaEye />
+              </icon>
+            </button></td
+          >
         </tr>
       {/each}
     </tbody>
@@ -62,5 +93,14 @@
 
   .styled-table tbody tr:last-of-type {
     border-bottom: 2px solid #009879;
+  }
+  icon {
+    width: 100%;
+    height: 100%;
+  }
+  button {
+    width: 30px;
+    height: 30px;
+    padding: 4px;
   }
 </style>
