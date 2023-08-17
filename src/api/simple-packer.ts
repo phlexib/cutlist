@@ -66,6 +66,7 @@ class Packer {
   material: string;
   name: string;
   root: any;
+  kerf: number = 0.125;
   constructor(w, h, material, name) {
     this.w = w;
     this.h = h;
@@ -73,6 +74,7 @@ class Packer {
     this.name = name;
     this.root = { x: 0, y: 0, w: w, h: h };
   }
+
   fit(blocks) {
     var n, node, block;
     for (n = 0; n < blocks.length; n++) {
@@ -91,53 +93,81 @@ class Packer {
 
   splitNode(node, w, h) {
     node.used = true;
-    node.down = { x: node.x, y: node.y + h, w: node.w, h: node.h - h };
-    node.right = { x: node.x + w, y: node.y, w: node.w - w, h: h };
+    node.down = {
+      x: node.x,
+      y: node.y + h + this.kerf,
+      w: node.w,
+      h: node.h - h - this.kerf,
+    };
+    node.right = {
+      x: node.x + w + this.kerf,
+      y: node.y,
+      w: node.w - w - this.kerf,
+      h: h,
+    };
     return node;
   }
 }
 
-const buildCuts = (fitBoxes) => {
+const buildCuts = (fitBoxes, kerf) => {
   // Get Cuts
-  let xCuts = fitBoxes.map((box) => {
-    return [box.fit.x, box.fit.x + box.w];
+  let xCuts = fitBoxes.map((box, i) => {
+    return {
+      fromX: box.fit.x,
+      toX: box.fit.right.x - kerf,
+      fromY: box.fit.y,
+      toY: box.fit.y,
+    };
   });
   let xCutsFlat = xCuts.flat();
   xCutsFlat = xCutsFlat.filter((cut) => {
-    return cut != 0;
+    return cut.fromY != 0;
   });
 
   xCutsFlat = [...new Set(xCutsFlat)];
   console.log("xCuts", xCutsFlat);
 
+  let yCuts = fitBoxes.map((box, i) => {
+    return {
+      fromX: box.fit.x,
+      toX: box.fit.x,
+      fromY: box.fit.right.y,
+      toY: box.fit.right.y - kerf,
+    };
+  });
+  let yCutsFlat = yCuts.flat();
+  yCutsFlat = yCutsFlat.filter((cut) => {
+    return cut.fromY != 0;
+  });
+
+  yCutsFlat = [...new Set(yCutsFlat)];
+  console.log("yCuts", yCutsFlat);
+
   // Get Cuts
   let hor = [];
   let ver = [];
-  let cuts = fitBoxes
-    .map((box) => {
-      let top = {
-        from: { x: box.fit.x, y: box.fit.y },
-        to: { x: box.fit.x + box.w, y: box.fit.y },
-      };
-      let left = {
-        from: { x: box.fit.x, y: box.fit.y },
-        to: { x: box.fit.x, y: box.fit.y + box.h },
-      };
-      let right = {
-        from: { x: box.fit.x + box.w, y: box.fit.y },
-        to: { x: box.fit.x + box.w, y: box.fit.y + box.h },
-      };
-      let bottom = {
-        from: { x: box.fit.x, y: box.fit.y + box.h },
-        to: { x: box.fit.x + box.w, y: box.fit.y + box.h },
-      };
+  fitBoxes.forEach((box) => {
+    let top = {
+      from: { x: box.x, y: box.y },
+      to: { x: box.x + box.w, y: box.y },
+    };
+    let left = {
+      from: { x: box.x, y: box.y },
+      to: { x: box.x, y: box.y + box.h },
+    };
+    let right = {
+      from: { x: box.x + box.w, y: box.fit.y },
+      to: { x: box.x + box.w, y: box.fit.y + box.h },
+    };
+    let bottom = {
+      from: { x: box.fit.down.x, y: box.fit.down.y },
+      to: { x: box.fit.down.x, y: box.fit.y },
+    };
+    hor.push(top, bottom);
+    ver.push(left, right);
 
-      hor.push(top, bottom);
-      ver.push(left, right);
-
-      return [top, left, right, bottom];
-    })
-    .flat();
+    return [top, left, right, bottom];
+  });
 
   // for each cut, find the longest distance between the same x or y
   const sortedCuts = { h: hor, v: ver };
@@ -224,7 +254,7 @@ const buildBins = (parts: Part[], bins: Stock[], kerf, scale) => {
 
     const remainingBoxes = bin.parts.filter((block: Block) => !block.fit);
     if (fitBoxes.length > 0) {
-      const cuts = buildCuts(fitParts);
+      const cuts = buildCuts(fitParts, kerf);
       bin.parts = fitParts;
       bin.blocks = fitBoxes;
       bin.cuts = cuts;
@@ -284,7 +314,7 @@ export const buildManifest = (
     const partsByMat = flatParts
       .filter((part: Part) => part.material === mat)
       .map((part: Part) => {
-        return { ...part, h: part.h + kerf, w: part.w + kerf };
+        return { ...part, h: part.h, w: part.w };
       });
     console.log("partsByMat", partsByMat);
 

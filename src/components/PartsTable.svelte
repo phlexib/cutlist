@@ -12,10 +12,10 @@
     Dropdown,
     DropdownItem,
     Chevron,
-  } from 'flowbite-svelte';
+  } from "flowbite-svelte";
 
-  import { parts, materials } from '../stores/cuts';
-  import { FaPlus, FaMinus, FaRedo } from 'svelte-icons/fa';
+  import { parts, materials } from "../stores/cuts-store";
+  import { FaPlus, FaMinus, FaRedo } from "svelte-icons/fa";
 
   let length = 20;
   let width = 1;
@@ -24,7 +24,7 @@
   const addPart = () => {
     parts.set([
       ...$parts,
-      { id: crypto.randomUUID(), name: '', h: 1, w: 1, qty: 1 },
+      { id: crypto.randomUUID(), name: "", h: 1, w: 1, qty: 1 },
     ]);
   };
 
@@ -66,93 +66,141 @@
     </icon>
   </button>
 </div>
-<Table striped={true}>
-  <TableHead>
-    <TableHeadCell>Name</TableHeadCell>
-    <TableHeadCell>Length</TableHeadCell>
-    <TableHeadCell>Width</TableHeadCell>
-    <TableHeadCell>Qty</TableHeadCell>
-    <TableHeadCell>Material</TableHeadCell>
-    <TableHeadCell>
-      <span class="sr-only">Orientation</span>
-    </TableHeadCell>
-    <TableHeadCell>
-      <span class="sr-only"> Edit </span>
-    </TableHeadCell>
-  </TableHead>
-  <TableBody>
-    {#each $parts as el, id (el.name)}
-      <TableBodyRow>
-        <TableBodyCell
-          ><Input
-            type="text"
-            placeholder="Name"
-            size="sm"
-            bind:value={el.name}
-          /></TableBodyCell
-        >
-        <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.w} /></TableBodyCell
-        >
-        <TableBodyCell>
-          <NumberInput size="sm" bind:value={el.h} /></TableBodyCell
-        >
-        <TableBodyCell
-          ><NumberInput size="sm" bind:value={el.qty} /></TableBodyCell
-        >
-        <TableBodyCell>
-          <Button id="dd-button" size="sm" outline={true} color="none">
-            <Chevron>{el.material}</Chevron></Button
-          >
-          <Dropdown>
-            {#each $materials as material}
-              <DropdownItem
-                on:click={() => {
-                  handleMaterialSelect(el.name, material);
-                }}>{material}</DropdownItem
-              >
-            {/each}
-          </Dropdown>
-        </TableBodyCell>
-        <TableBodyCell>
-          <button
-            on:click={() => {
-              flipPart(el.id);
-            }}
-          >
-            <icon>
-              <FaRedo />
-            </icon>
-          </button>
-        </TableBodyCell>
-        <TableBodyCell>
-          <button
-            on:click={() => {
-              removePart(el.id);
-            }}
-          >
-            <icon>
-              <FaMinus />
-            </icon>
-          </button>
-        </TableBodyCell>
-      </TableBodyRow>
-    {/each}
-  </TableBody>
-</Table>
 
-<style>
+<div class="mx-2">
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Length</th>
+        <th>Width</th>
+        <th>Qty</th>
+        <th>Material</th>
+        <th>Orientation</th>
+        <th />
+      </tr>
+    </thead>
+    <tbody>
+      {#each $parts as el, id (el.name)}
+        <tr id={id.toString()}>
+          <td>
+            <Input
+              type="text"
+              placeholder="Name"
+              size="sm"
+              bind:value={el.name}
+            />
+          </td>
+          <td>
+            <Input
+              type="number"
+              placeholder="Length"
+              size="sm"
+              bind:value={el.w}
+            />
+          </td>
+          <td>
+            <Input
+              type="number"
+              placeholder="Width"
+              size="sm"
+              bind:value={el.h}
+            />
+          </td>
+          <td>
+            <Input
+              type="number"
+              placeholder="Qty"
+              size="sm"
+              bind:value={el.qty}
+            />
+          </td>
+          <td>
+            <select bind:value={el.material}>
+              {#each $materials.map((m) => m.name) as material, id}
+                <option value={material}>{material} </option>
+              {/each}
+            </select>
+          </td>
+          <td>
+            <button
+              on:click={() => {
+                flipPart(el.id);
+              }}
+            >
+              <icon>
+                <FaRedo />
+              </icon>
+            </button>
+          </td>
+          <td>
+            <button
+              on:click={() => {
+                removePart(el.id);
+              }}
+            >
+              <icon>
+                <FaMinus />
+              </icon>
+            </button>
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
+
+<style lang="scss">
+  .styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.8em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+  .styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+  }
+  .styled-table th,
+  .styled-table td {
+    padding: 4px 6px;
+  }
+  .styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+
+  .styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+
+  .styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
   h4 {
     margin-left: 1.5rem;
     font-weight: bold;
   }
   icon {
-    width: 100%;
-    height: 100%;
+    width: 24px;
+    height: 24px;
   }
   button {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     padding: 4px;
+  }
+  select {
+    padding: 4px;
+    width: 100%;
+    min-width: 100px;
+    height: 40px;
+    border: none;
+    background-color: transparent;
+    font-size: 0.8em;
+    font-family: sans-serif;
+    border: 1px sole #dddddd;
   }
 </style>

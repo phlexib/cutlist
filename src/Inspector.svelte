@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import InfosTable from "./components/InfosTable.svelte";
-  import { Accordion } from "flowbite-svelte";
+  import { kerf } from "./stores/cuts-store";
+
   export let data = [];
 
   const getStokcCuts = (d) => {
@@ -20,11 +21,17 @@
           stock: d.id,
         };
       })
+
       .sort((a, b) => {
-        //   let aVal = a.direction.toLowerCase() === "w" ? 0 : 1;
-        //   let bVal = b.direction.toLowerCase() === "w" ? 0 : 1;
-        //   return bVal - aVal;
-        return b.length - a.length;
+        //   let aVal = a.stock.toLowerCase() === "w" ? 0 : 1;
+        //   let bVal = b.stock.toLowerCase() === "w" ? 0 : 1;
+        let aVal = a.stock.toLowerCase();
+        let bVal = b.stock.toLowerCase();
+        return bVal - aVal;
+        // return b.sock - a.stock;
+      })
+      .filter((c) => {
+        return c.fromLeft != 0 || c.fromTop != 0;
       })
       .map((cut, index) => {
         return {

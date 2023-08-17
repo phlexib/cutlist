@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import FaEye from "svelte-icons/fa/FaEye.svelte";
+  import { selectedCut } from "../stores/app-store";
   export let tableData = [
     {
       id: 1,
@@ -16,6 +17,7 @@
   let headers = getHeaders();
 
   const handleClick = (item) => {
+    selectedCut.set(item);
     console.log(item);
   };
 
@@ -69,10 +71,10 @@
   .styled-table {
     border-collapse: collapse;
     margin: 25px 0;
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-family: sans-serif;
     min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   }
   .styled-table thead tr {
     background-color: #009879;
@@ -81,7 +83,7 @@
   }
   .styled-table th,
   .styled-table td {
-    padding: 6px 8px;
+    padding: 4px 6px;
   }
   .styled-table tbody tr {
     border-bottom: 1px solid #dddddd;
@@ -99,8 +101,8 @@
     height: 100%;
   }
   button {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     padding: 4px;
   }
 </style>

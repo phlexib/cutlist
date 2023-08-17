@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { partsColor, kerf } from "../stores/cuts";
+  import { partsColor, kerf } from "../stores/cuts-store";
   export let scale = 20;
   export let cut: any;
   let rect: any;
@@ -26,12 +26,12 @@
 <line
   id={`${cut.stock}-${cut.id}`}
   class="cut-line"
-  x1={cut.from.x * scale}
-  y1={cut.from.y * scale}
-  x2={cut.to.x * scale}
-  y2={cut.to.y * scale}
+  x1={cut.from.x * scale - ($kerf * scale) / 2}
+  y1={cut.from.y * scale - ($kerf * scale) / 2}
+  x2={cut.to.x * scale - ($kerf * scale) / 2}
+  y2={cut.to.y * scale - ($kerf * scale) / 2}
   stroke-width={$kerf * scale}
-  stroke="blue"
+  stroke="rgba(0,200,0,0.5)"
 />
 
 <style>

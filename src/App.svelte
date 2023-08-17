@@ -8,8 +8,14 @@
   import StockTable from "./components/StockTable.svelte";
   import Part from "./components/Part.svelte";
   import Stock from "./components/Stock.svelte";
-  import { parts, stocks, materials, kerf, partsColor } from "./stores/cuts";
-  import { selectedItem } from "./stores/app";
+  import {
+    parts,
+    stocks,
+    materials,
+    kerf,
+    partsColor,
+  } from "./stores/cuts-store";
+  import { selectedPart } from "./stores/app-store";
   import { Range, Label, Tooltip, NumberInput } from "flowbite-svelte";
   import Inspector from "./Inspector.svelte";
   let scale = 20;
@@ -60,7 +66,7 @@
     <StockTable />
     <PartTable />
   </div>
-  <div class="col-span-2">
+  <div id="viewer-container">
     <div class="m-4">
       <Label>Scale</Label>
       <Range id="range1" bind:value={scale} min="10" max="50" size="sm" />
@@ -70,10 +76,13 @@
       <Stock {stock} {scale} />
     {/each}
   </div>
+  <div><Inspector data={manifest} /></div>
 </main>
-<div><Inspector data={manifest} /></div>
 
 <style>
+  #viewer-container {
+    overflow: auto;
+  }
   .stock-label {
     position: absolute;
     bottom: 0;

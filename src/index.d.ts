@@ -3,6 +3,7 @@ interface Box {
   height: number;
   packed: boolean;
   constrainRotation: boolean;
+  type: "box" | "cut";
   x: number;
   y: number;
 }
@@ -13,6 +14,7 @@ interface Stock {
   height: number;
   depth: number;
   qty?: number = 1;
+
   material?: string;
 }
 

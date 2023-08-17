@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { partsColor } from "../stores/cuts";
+  import { partsColor } from "../stores/cuts-store";
+  import { selectedPart } from "../stores/app-store";
   export let scale = 20;
   export let part: any;
   let rect: any;
@@ -26,7 +27,9 @@
 <rect
   id={part.id}
   class="part"
-  fill={$partsColor[part.id.split("_")[0]] || "rgba(0,0,0,0)"}
+  fill={part.id == $selectedPart.id
+    ? "#32a852"
+    : $partsColor[part.id.split("_")[0]] || "rgba(0,0,0,0)"}
   width={part.w * scale}
   height={part.h * scale}
   x={part.x * scale}
