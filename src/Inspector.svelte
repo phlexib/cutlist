@@ -5,7 +5,7 @@
 
   export let data = [];
 
-  const getStokcCuts = (d) => {
+  $: getStokcCuts = (d) => {
     return d.cuts
       .map((cut, index) => {
         let direction = cut.to.x - cut.from.x > 0 ? "W" : "H";
@@ -49,7 +49,7 @@
       });
   };
 
-  let tableData = data
+  $: tableData = data
     .reduce((acc, d) => {
       return [...acc, ...getStokcCuts(d)];
     }, [])
