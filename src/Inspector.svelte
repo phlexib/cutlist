@@ -11,10 +11,10 @@
         let direction = cut.to.x - cut.from.x > 0 ? "W" : "H";
         return {
           direction: direction,
-          fromLeft: cut.from.x,
-          toRight: cut.to.x,
-          fromTop: cut.from.y,
-          toBottom: cut.to.y,
+          fromLeft: direction == "W" ? cut.from.x : cut.from.x,
+          toRight: direction == "W" ? cut.to.x : cut.to.x,
+          fromTop: direction == "W" ? cut.from.y - $kerf : cut.from.y,
+          toBottom: direction == "W" ? cut.to.y - $kerf : cut.to.y,
           length: `${
             direction === "W" ? cut.to.x - cut.from.x : cut.to.y - cut.from.y
           }`,
@@ -31,7 +31,15 @@
         // return b.sock - a.stock;
       })
       .filter((c) => {
-        return c.fromLeft != 0 || c.fromTop != 0;
+        let valid = true;
+        if (c.direction == "H" && c.fromLeft <= 0) {
+          valid = false;
+        }
+        if (c.direction == "W" && c.fromTop <= 0) {
+          valid = false;
+        }
+
+        return valid;
       })
       .map((cut, index) => {
         return {
