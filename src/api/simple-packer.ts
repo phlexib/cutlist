@@ -115,20 +115,23 @@ const buildCuts = (fitBoxes, kerf) => {
   let ver = [];
   fitBoxes.forEach((box) => {
     let top = {
-      from: { x: box.x, y: box.y - kerf },
-      to: { x: box.x + box.w, y: box.y - kerf },
+      from: { x: box.x, y: box.y != 0 ? box.y : box.y - kerf },
+      to: { x: box.x + box.w, y: box.y != 0 ? box.y : box.y - kerf },
     };
     let left = {
-      from: { x: box.x - kerf, y: box.y },
-      to: { x: box.x - kerf, y: box.y + box.h },
+      from: { x: box.x != 0 ? box.x - kerf : 0, y: box.y },
+      to: { x: box.x != 0 ? box.x - kerf : 0, y: box.y + box.h },
     };
     let right = {
       from: { x: box.x + box.w - kerf, y: box.fit.y },
       to: { x: box.x + box.w - kerf, y: box.fit.y + box.h },
     };
     let bottom = {
-      from: { x: box.fit.down.x, y: box.fit.down.y - kerf },
-      to: { x: box.fit.down.x, y: box.fit.y - kerf },
+      from: {
+        x: box.fit.down.x,
+        y: box.fit.down.y != 0 ? box.fit.down.y - kerf : 0,
+      },
+      to: { x: box.fit.down.x, y: box.fit.y != 0 ? box.fit.y - kerf : 0 },
     };
     hor.push(top, bottom);
     ver.push(left, right);
