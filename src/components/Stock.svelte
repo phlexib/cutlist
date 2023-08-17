@@ -119,14 +119,25 @@
     {/each} -->
   </svg>
   {#if $selectedCut && $selectedCut.stock == stock.id}
-    <line
-      x1={$selectedCut.fromLeft * scale + 10}
-      y1={$selectedCut.fromTop * scale + 10}
-      x2={$selectedCut.toRight * scale + 10}
-      y2={$selectedCut.toBottom * scale + 10}
-      stroke-width={$kerf * scale}
-      stroke="red"
-    />
+    {#if $selectedCut.direction == "W"}
+      <line
+        x1={$selectedCut.fromLeft * scale + 10}
+        y1={($selectedCut.fromTop + $kerf / 2) * scale + 10}
+        x2={$selectedCut.toRight * scale + 10}
+        y2={($selectedCut.toBottom + $kerf / 2) * scale + 10}
+        stroke-width={$kerf * scale}
+        stroke="red"
+      />
+    {:else}
+      <line
+        x1={($selectedCut.fromLeft + $kerf / 2) * scale + 10}
+        y1={$selectedCut.fromTop * scale + 10}
+        x2={($selectedCut.toRight + $kerf / 2) * scale + 10}
+        y2={$selectedCut.toBottom * scale + 10}
+        stroke-width={$kerf * scale}
+        stroke="red"
+      />
+    {/if}
   {/if}
 </svg>
 

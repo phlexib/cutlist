@@ -24,28 +24,30 @@
   });
 </script>
 
-<rect
-  id={part.id}
-  class="part"
-  fill={part.id == $selectedPart.id
-    ? "#32a852"
-    : $partsColor[part.id.split("_")[0]] || "rgba(0,0,0,0)"}
-  width={part.w * scale}
-  height={part.h * scale}
-  x={part.x * scale}
-  y={part.y * scale}
-  style={`fill: #12345;`}
-/>
-<text
-  class="part-text id"
-  dominant-baseline="middle"
-  x={part.x * scale + 10}
-  y={part.y * scale + (part.h * scale) / 2}
-  fill="black"
-  stroke="none"
-  font-size="smaller"
-  alignment-baseline="middle">{part.id}</text
->
+{#if part}
+  <rect
+    id={part.id}
+    class="part"
+    fill={$selectedPart && part.id == $selectedPart.id
+      ? "#32a852"
+      : $partsColor[part.id.split("_")[0]] || "rgba(0,0,0,0)"}
+    width={part.w * scale}
+    height={part.h * scale}
+    x={part.x * scale}
+    y={part.y * scale}
+    style={`fill: #12345;`}
+  />
+  <text
+    class="part-text id"
+    dominant-baseline="middle"
+    x={part.x * scale + 10}
+    y={part.y * scale + (part.h * scale) / 2}
+    fill="black"
+    stroke="none"
+    font-size="smaller"
+    alignment-baseline="middle">{part.id}</text
+  >
+{/if}
 
 <style>
   .part {

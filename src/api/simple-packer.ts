@@ -111,57 +111,24 @@ class Packer {
 
 const buildCuts = (fitBoxes, kerf) => {
   // Get Cuts
-  let xCuts = fitBoxes.map((box, i) => {
-    return {
-      fromX: box.fit.x,
-      toX: box.fit.right.x - kerf,
-      fromY: box.fit.y,
-      toY: box.fit.y,
-    };
-  });
-  let xCutsFlat = xCuts.flat();
-  xCutsFlat = xCutsFlat.filter((cut) => {
-    return cut.fromY != 0;
-  });
-
-  xCutsFlat = [...new Set(xCutsFlat)];
-  console.log("xCuts", xCutsFlat);
-
-  let yCuts = fitBoxes.map((box, i) => {
-    return {
-      fromX: box.fit.x,
-      toX: box.fit.x,
-      fromY: box.fit.right.y,
-      toY: box.fit.right.y - kerf,
-    };
-  });
-  let yCutsFlat = yCuts.flat();
-  yCutsFlat = yCutsFlat.filter((cut) => {
-    return cut.fromY != 0;
-  });
-
-  yCutsFlat = [...new Set(yCutsFlat)];
-  console.log("yCuts", yCutsFlat);
-
-  // Get Cuts
   let hor = [];
   let ver = [];
   fitBoxes.forEach((box) => {
     let top = {
-      from: { x: box.x, y: box.y },
-      to: { x: box.x + box.w, y: box.y },
+      from: { x: box.x, y: box.y - kerf },
+      to: { x: box.x + box.w, y: box.y - kerf },
     };
     let left = {
-      from: { x: box.x, y: box.y },
-      to: { x: box.x, y: box.y + box.h },
+      from: { x: box.x - kerf, y: box.y },
+      to: { x: box.x - kerf, y: box.y + box.h },
     };
     let right = {
-      from: { x: box.x + box.w, y: box.fit.y },
-      to: { x: box.x + box.w, y: box.fit.y + box.h },
+      from: { x: box.x + box.w - kerf, y: box.fit.y },
+      to: { x: box.x + box.w - kerf, y: box.fit.y + box.h },
     };
     let bottom = {
-      from: { x: box.fit.down.x, y: box.fit.down.y },
-      to: { x: box.fit.down.x, y: box.fit.y },
+      from: { x: box.fit.down.x, y: box.fit.down.y - kerf },
+      to: { x: box.fit.down.x, y: box.fit.y - kerf },
     };
     hor.push(top, bottom);
     ver.push(left, right);
