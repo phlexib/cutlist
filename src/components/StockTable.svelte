@@ -14,11 +14,6 @@
   import { stocks } from "../stores/cuts-store";
   import { FaPlus, FaMinus } from "svelte-icons/fa";
 
-  let length = 20;
-  let width = 1;
-  let qty = 1;
-  let headers = ["name", "length", "width", "qty", "material"];
-
   let totalBoardFeet;
   $: {
     totalBoardFeet = $stocks.reduce((acc, s) => {
@@ -37,6 +32,10 @@
   const removeStock = (name) => {
     const updatedStocks = $stocks.filter((part) => part.name !== name);
     stocks.set([...updatedStocks]);
+  };
+
+  const updateName = (name) => {
+    console.log(name);
   };
 </script>
 
@@ -62,7 +61,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each $stocks as el, id (el.name)}
+      {#each $stocks as el, id}
         <tr id={id.toString()}>
           <td>
             <Input
@@ -70,6 +69,7 @@
               placeholder="Name"
               size="sm"
               bind:value={el.name}
+              on:change={updateName}
             />
           </td>
           <td>
@@ -105,7 +105,7 @@
             />
           </td>
           <td>
-            {(el.width / 12) * (el.height / 12) * el.qty}
+            {((el.width / 12) * (el.height / 12) * el.qty).toFixed(2)}
           </td>
           <td
             ><button
@@ -126,7 +126,7 @@
         <td />
         <td />
         <td />
-        <td>{totalBoardFeet}</td>
+        <td>{totalBoardFeet.toFixed(2)}</td>
       </tr>
     </tbody>
   </table>

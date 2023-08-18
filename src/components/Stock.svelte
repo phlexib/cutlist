@@ -139,6 +139,18 @@
       />
     {/if}
   {/if}
+  <text
+    id="width-text"
+    class="part-text id"
+    dominant-baseline="middle"
+    x={stock.width * scale - 10}
+    y={stock.height * scale}
+    fill="black"
+    stroke="none"
+    font-size="18px"
+    text-anchor="end"
+    alignment-baseline="middle">{stock.material}</text
+  >
 </svg>
 
 <style>

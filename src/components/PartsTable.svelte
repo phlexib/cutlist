@@ -81,7 +81,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each $parts as el, id (el.name)}
+      {#each $parts as el, id}
         <tr id={id.toString()}>
           <td>
             <Input

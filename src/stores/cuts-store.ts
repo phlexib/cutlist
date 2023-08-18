@@ -31,9 +31,9 @@ let defaultParts: Part[] = [
   },
   {
     id: "4",
-    w: 28,
+    w: 26,
     h: 10,
-    qty: 4,
+    qty: 3,
     name: "Shelf",
     material: "Walnut",
     flip: false,
@@ -50,8 +50,8 @@ let defaultStocks: Stock[] = [
     name: "RStock",
   },
   {
-    width: 24,
-    height: 12,
+    width: 46,
+    height: 24,
     depth: 1,
     qty: 3,
     material: "Walnut",
