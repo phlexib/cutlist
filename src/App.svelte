@@ -35,6 +35,10 @@
     return Math.floor(Math.random() * (max - min)) + min;
   };
 
+  $: console.log(
+    `Board Foot ${($stocks[0].width / 12) * ($stocks[0].height / 12)}`
+  );
+
   materials.subscribe((val) => {
     if (val) {
       console.log(val);

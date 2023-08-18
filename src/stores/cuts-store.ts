@@ -31,10 +31,10 @@ let defaultParts: Part[] = [
   },
   {
     id: "4",
-    w: 6,
-    h: 4,
+    w: 28,
+    h: 10,
     qty: 4,
-    name: "Wall",
+    name: "Shelf",
     material: "Walnut",
     flip: false,
   },
@@ -42,18 +42,18 @@ let defaultParts: Part[] = [
 
 let defaultStocks: Stock[] = [
   {
-    height: 8,
     width: 36,
+    height: 8,
     depth: 1,
-    qty: 2,
+    qty: 4,
     material: "Red Oak",
     name: "RStock",
   },
   {
-    height: 8,
     width: 24,
+    height: 12,
     depth: 1,
-    qty: 1,
+    qty: 3,
     material: "Walnut",
     name: "WStock",
   },
@@ -68,9 +68,13 @@ export let kerf = writable(0.125);
 export let algo = writable(defaultAlgo);
 
 export const materials = derived([stocks], ([$stocks]) => {
-  return $stocks.map((stock, id) => {
-    return { name: stock.material, color: materialColors[id] };
-  });
+  return $stocks.reduce((acc, stock, id) => {
+    if (!acc.some((material) => material.name === stock.material)) {
+      acc.push({ name: stock.material, color: materialColors[id] });
+    }
+    return acc;
+  }, []);
+  // Remove material with the same name
 });
 
 export const partsColor = derived([parts, colors], ([$parts, $colors]) => {

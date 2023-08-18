@@ -18,6 +18,16 @@
   let width = 1;
   let qty = 1;
   let headers = ["name", "length", "width", "qty", "material"];
+
+  let totalBoardFeet;
+  $: {
+    totalBoardFeet = $stocks.reduce((acc, s) => {
+      let bf = (s.width / 12) * (s.height / 12);
+      console.log(bf);
+      return acc + bf;
+    }, 0);
+  }
+
   const addStock = () => {
     stocks.set([
       ...$stocks,
@@ -47,6 +57,7 @@
         <th>Width</th>
         <th>Qty</th>
         <th>Material</th>
+        <th>Board/Ft</th>
         <th />
       </tr>
     </thead>
@@ -93,7 +104,9 @@
               bind:value={el.material}
             />
           </td>
-
+          <td>
+            {($stocks[0].width / 12) * ($stocks[0].height / 12)}
+          </td>
           <td
             ><button
               on:click={() => {
@@ -107,6 +120,14 @@
           >
         </tr>
       {/each}
+      <tr>
+        <td>Total </td>
+        <td />
+        <td />
+        <td />
+        <td />
+        <td>{totalBoardFeet}</td>
+      </tr>
     </tbody>
   </table>
 </div>
