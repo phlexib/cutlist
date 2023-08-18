@@ -24,7 +24,7 @@
     totalBoardFeet = $stocks.reduce((acc, s) => {
       let bf = (s.width / 12) * (s.height / 12);
       console.log(bf);
-      return acc + bf;
+      return acc + bf * s.qty;
     }, 0);
   }
 
@@ -105,7 +105,7 @@
             />
           </td>
           <td>
-            {($stocks[0].width / 12) * ($stocks[0].height / 12)}
+            {(el.width / 12) * (el.height / 12) * el.qty}
           </td>
           <td
             ><button
